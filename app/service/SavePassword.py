@@ -6,7 +6,7 @@ class SavePassword:
         self.dynamodb = boto3.resource('dynamodb')
         self.table = self.dynamodb.Table(table_name)
 
-    def save_password(self, password_data):
+    def save_password(self, password_data:dict):
         try:
             self.table.put_item(Item=password_data)
             return True

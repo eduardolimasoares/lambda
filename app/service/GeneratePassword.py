@@ -2,7 +2,8 @@ import random
 import string
 import uuid
 import time
-
+from app.models.PasswordModel import RequestPassword
+from app.service.SavePassword import SavePassword
 
 class PasswordGenerator:
     def __init__(self):
@@ -21,22 +22,29 @@ class PasswordGenerator:
         password = "".join(random.choice(chars) for _ in range(length))
         return password
     
-    def generate_password_data(self, request_password):
-        password = self.generate_password(request_password['length'], request_password['use_words'], request_password['use_numbers'], request_password['use_symbols'])
+    def generate_password_data(self, request_password:RequestPassword):
+        
+        if request_password.password == "":
+            password = self.generate_password(request_password.length, request_password.use_words, request_password.use_numbers, request_password.use_symbols)
+        else:
+            password = request_password.password
 
-        valid_until = time.time() + request_password['valid_days'] * 24 * 3600
+        valid_until = time.time() + request_password.valid_days * 24 * 3600
 
         password_data = {
-            'email': request_password['email'],
+            'email': request_password.email,
             'password': password,
-            "max_views": request_password['max_views'],
-            "num_views ": request_password['num_views'],
+            "max_views": request_password.max_views,
             "valid_until": valid_until,
-            "valid_days": False,
+            "num_views": 0,
         }
 
-        return password_data
-    
-    def can_view(self, num_views, max_views, valid_until):
-        return num_views < max_views and time.time() < valid_until
+        save = SavePassword()
+        saved = save.save_password(password_data=password_data)
+
+        if saved:
+            return True
+        else:
+            return False
+
   
