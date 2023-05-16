@@ -15,5 +15,5 @@ class GetPasswordById:
             else:
                 return None
         except ClientError as e:
-            print(f"Erro ao buscar senha do email {email}: {e.response['Error']['Message']}")
+            print(f"Erro ao buscar senha do email")
             return None
